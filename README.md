@@ -1,37 +1,41 @@
-# GTM-terraform-LKE
+# GTM-terraform-Linode
  
 ## Overview
 
-These are scripts and Terraform templates designed to automate the process of building an Akamai Global Traffic Management (GTM) domain and property, with backend targets pointing to Linode Kubernetes Engine (LKE) External IP nodes. The script can also be run on any interval to refresh target nodes in the event of autoscaling or node recycling events, ensuring that GTM has fresh targets. The script also includes an Akamai DNS Terraform resource to automate the creation of a CNAME pointing to the GTM property name. 
+These are scripts and Terraform templates designed to automate the process of building an Akamai Global Traffic Management (GTM) domain and property, with backend targets pointing to Linode Virtual Machines that share the same tag. The script can also be run on any interval to refresh target VMs in the event of autoscaling or other recycling events, ensuring that GTM has fresh targets. The script also includes an Akamai DNS Terraform resource to automate the creation of a CNAME pointing to the GTM property name. 
 
-When deployed, these scripts and terraform give the ability to dynamically provision and maintain a global endpoint via GTM for multi-region LKE clusters, even as nodes and clusters are created and destroyed. 
+When deployed, these scripts and terraform give the ability to dynamically provision and maintain a global endpoint via GTM for multi-region application deployments using Linode Virtual Machines, even as machines in the deployment are created and destroyed.
 
 ## Prerequisites 
 
-- jq, kubectl, terraform installed on the local machine that is running the scripts.
+- jq and terraform installed on the local machine that is running the scripts.
 - An Akamai API token, stored in ~/.edgerc
-- The kubeconfig files from any clusters that are to be added to the GTM target list.
+- The linode-cli client, configured with a valid Linode API token.
 
-## Caveats 
+## Features 
 
-- This assumes a relationship of one region to one cluster. GTM does not allow a config to use traffic targets for a single data center, and in scenarios when two clusters exist in a single datacenter, GTM normally prompts a user to clone the data center. This cloning feature is not yet built into the script, so only a single cluster per data center for now is supported.
+- The script will read Linode information via the Linode API for all virtual machines that share a defined tag (currently, the tag value is set in the variables section of the ```process-linodejson``` script in this repository.
 
-- This assumes that the LKE cluster is using Service types of hostNetwork, allowing the K8s pods to utilize the VM's network connections directly. As GTM will effectively serve as a load balancer, the need for a local LB service is diminished, making hostNetwork an effecient choice for cluster ingress.
+- In the event that machines share a region, the script will cocatenate the IP addresses from all machines in the region into a single GTM target, with a server entry for each machine.
 
-- The region identification makes use of the Akamai Compute Instance Metadata Service, which is not available in every Compute region currently. 
+- The script filters IP addresses within the Linode Private Network range ```192.168/16``` so they are not loaded as GTM target servers.
 
+- 
 ## To-do
 
 - Add Liveness check automation
-- Add Load Feedback automation
 - Add Ion, CPS, Kona automation for end-to-end Akamai Provisioning
 
 ## Instructions
 
 - Clone this repo locally.
-- Place any kubeconfigs that are to be added to the GTM config into the ./kubeconfigs-in directory.
-- Run ```./process-kubeconfigs``` to initially process the kubeconfigs, and re-run as new kubeconfigs are added.
-- Run ```./process-targets``` to scan each cluster for current node External IP addresses and to build the needed Terraform files.
+- change the tag variable value to the desire Linode tag within the ```process-linodejson``` file, as shown below with a value of "NATS":
+```
+#!/bin/bash
+
+LNINPUTFILE="linodejson"
+tag="NATS"
+```
 - Update tf.tfvars with the required variables
   - Akamai contract and group ID (contractid and groupid) (existing, based on your Akamai account)
   - GTM Domain Name (domain) (Initially new on creation, cannot collide with existing GTM Domain names in use)
