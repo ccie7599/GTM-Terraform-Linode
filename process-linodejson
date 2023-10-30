@@ -2,7 +2,7 @@
 
 
 LNINPUTFILE="linodejson"
-LNTAG="NATS"
+tag="NATS"
 LNOUTPATH="./linode-targets/*"
 LNOUT="./linode-targets/"
 LNPROC="./linode-processed/"
@@ -11,9 +11,10 @@ mkdir -p $LNOUT
 mkdir -p $LNPROC
 rm -f $LNOUTPATH
 rm -f $LNPROCPATH
+rm -f $LNINPUTFILE
 # run linode-cli 
 
-linode-cli linodes list --tags=$LNTAG --json > $LNINPUTFILE 
+linode-cli linodes list --tags=$tag --json > $LNINPUTFILE 
 
 # Read the JSON and process each object
 jq -c '.[]' $LNINPUTFILE | while IFS= read -r obj; do
