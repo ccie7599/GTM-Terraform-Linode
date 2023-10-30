@@ -44,5 +44,5 @@ tag="NATS"
   - Zone (zone) (DNS Zonefile to update with the CNAME record)
 - Run ```terraform init``` to initialize initial terraform state, followed by ```terraform plan --var-file=tf.tfvars``` to validate your terraform plan, and finally ```terraform apply ---var-file=tf.tfvars``` to apply the terraform plan.
 
-Subsqeuent to the inital GTM domain and property creation, ```./process-targets``` can be run to update property.tf with new server targets as nodes are created and destroyed. The new property.tf will then need to be applied in terraform for GTM changes to take effect.
+Subsqeuent to the inital GTM domain and property creation, ```./process-targets``` can be run to update property.tf with new server targets as machines are created and destroyed. The new property.tf will then need to be applied in terraform for GTM changes to take effect.
 
