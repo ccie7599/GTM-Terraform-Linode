@@ -14,9 +14,9 @@ When deployed, these scripts and terraform give the ability to dynamically provi
 
 ## Features 
 
-- The script will read Linode information via the Linode API for all virtual machines that share a defined tag (currently, the tag value is set in the variables section of the ```process-linodejson``` script in this repository.
+- The script reads Linode information via the Linode API for all virtual machines that share a defined tag (currently, the tag value is set in the variables section of the ```process-linodejson``` script in this repository.
 
-- In the event that machines share a region, the script will cocatenate the IP addresses from all machines in the region into a single GTM target, with a server entry for each machine.
+- In the event that machines share a region, the script cocatenates the IP addresses from all machines in the region into a single GTM target, with a server entry for each machine.
 
 - The script filters IP addresses within the Linode Private Network range ```192.168/16``` so they are not loaded as GTM target servers.
 
